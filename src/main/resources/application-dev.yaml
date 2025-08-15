@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${PG_DB}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+logging:
+  level:
+    org.hibernate.stat: DEBUG
