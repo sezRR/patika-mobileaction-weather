@@ -1,6 +1,5 @@
-package dev.sezrr.projects.patikaweatherproject.service.impl;
+package dev.sezrr.projects.patikaweatherproject.service.pollution;
 
-import dev.sezrr.projects.patikaweatherproject.service.PollutionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

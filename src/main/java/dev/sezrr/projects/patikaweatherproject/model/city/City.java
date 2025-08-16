@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -59,5 +60,10 @@ public class City {
                     .state(city.getState())
                     .build();
         }
+    }
+    
+    public static String normalizedName(String name)
+    {
+        return StringUtils.capitalize(StringUtils.lowerCase(name));
     }
 }
