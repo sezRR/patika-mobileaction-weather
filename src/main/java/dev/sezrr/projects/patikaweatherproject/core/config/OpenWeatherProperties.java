@@ -15,7 +15,7 @@ public class OpenWeatherProperties {
     @Value("${openweather.geo-path}")
     private String geoPath;
 
-    @Value("${openweather.air-pollution-path}")
+    @Value("${openweather.air-pollution-history-path}")
     private String airPollutionPath;
 
     @Value("${openweather.api-key}")

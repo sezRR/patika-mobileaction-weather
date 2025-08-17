@@ -4,6 +4,7 @@ import dev.sezrr.projects.patikaweatherproject.core.model.GeospatialCoordinates;
 import dev.sezrr.projects.patikaweatherproject.core.model.uuid7.UuidV7;
 import dev.sezrr.projects.patikaweatherproject.model.city.command.CreateNewCityCommand;
 import dev.sezrr.projects.patikaweatherproject.model.city.query.CityQueryResponse;
+import dev.sezrr.projects.patikaweatherproject.model.city.query.GetCityGeoCoordinatesQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.Pollution;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -21,7 +22,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cities")
-public class City {
+public class City
+{
     @Id
     @UuidV7
     private UUID id;
@@ -36,10 +38,11 @@ public class City {
     private String country;
     private String state;
 
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "city", cascade =  CascadeType.ALL, orphanRemoval = true)
     private List<Pollution> pollutions;
 
-    public static class Mapper {
+    public static class Mapper
+    {
         public static City fromCommand(CreateNewCityCommand createNewCityCommand)
         {
             return City.builder()
@@ -58,6 +61,14 @@ public class City {
                     .geospatialCoordinates(city.getGeospatialCoordinates())
                     .country(city.getCountry())
                     .state(city.getState())
+                    .build();
+        }
+
+        public static City fromQueryResponse(GetCityGeoCoordinatesQueryResponse getCityGeoCoordinatesQueryResponse)
+        {
+            return City.builder()
+                    .id(getCityGeoCoordinatesQueryResponse.id())
+                    .geospatialCoordinates(getCityGeoCoordinatesQueryResponse.geospatialCoordinates())
                     .build();
         }
     }

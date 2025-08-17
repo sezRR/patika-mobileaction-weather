@@ -41,7 +41,7 @@ public class CitiesController {
     @GetMapping("/{name}")
     @Operation(
             summary = "Get city by name",
-            description = "Retrieves details of a city by its name. If the city does not exist in the database, it will be created using OpenWeather API."
+            description = "Retrieves details of a city by its name. If the city does not exist in the database, it will be created by the retrieved data from OpenWeather API."
     )
     public ResponseEntity<CityQueryResponse> getCityByName(@PathVariable String name)
     {
