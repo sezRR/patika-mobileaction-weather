@@ -98,6 +98,8 @@ public class PollutionServiceImpl implements PollutionService
                             cityName, range.getStart(), range.getEnd());
                     continue;
                 }
+
+                var pollutionHistoryData = pollutionHistory.get().getList();
                 // TODO: CALCULATE AVG POLLUTIONS
             }
 

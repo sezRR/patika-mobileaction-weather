@@ -1,16 +1,16 @@
 package dev.sezrr.projects.patikaweatherproject.core.webclient.openweather;
 
+import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model.OWAPollutionHistoryQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.model.city.query.CityQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.query.getcitypolllution.GetCityPollutionQueryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -38,10 +38,11 @@ public class OpenWeatherApiService {
                 .blockOptional();
     }
 
-    public Optional<String> getPollutionHistoryByCityName(GetCityPollutionQueryRequest getCityPollutionQueryRequest) {
+    public Optional<OWAPollutionHistoryQueryResponse> getPollutionHistoryByCityName(GetCityPollutionQueryRequest getCityPollutionQueryRequest)
+    {
+        // TODO: We can add retry mechanism here
         var startMillis = getCityPollutionQueryRequest.dateFilterObject().getStart().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-        var endMillis = getCityPollutionQueryRequest.dateFilterObject().getEnd().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
-
+        var endMillis = getCityPollutionQueryRequest.dateFilterObject().getEnd().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         return airPollutionApiClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("lat", getCityPollutionQueryRequest.geospatialCoordinates().getLat())
@@ -51,7 +52,7 @@ public class OpenWeatherApiService {
                         .build()
                 )
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(OWAPollutionHistoryQueryResponse.class)
                 .blockOptional();
     }
 }
