@@ -1,6 +1,5 @@
 package dev.sezrr.projects.patikaweatherproject.model.pollution;
 
-import dev.sezrr.projects.patikaweatherproject.core.model.AirQualityComponent;
 import dev.sezrr.projects.patikaweatherproject.core.model.AuditEntity;
 import dev.sezrr.projects.patikaweatherproject.core.model.converter.MapToJsonConverter;
 import dev.sezrr.projects.patikaweatherproject.core.model.uuid7.UuidV7;
@@ -9,6 +8,8 @@ import dev.sezrr.projects.patikaweatherproject.model.pollution.command.CreateNew
 import dev.sezrr.projects.patikaweatherproject.model.pollution.query.PollutionQueryResponse;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -30,9 +31,10 @@ public class Pollution extends AuditEntity {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     @Convert(converter = MapToJsonConverter.class)
-    private Map<AirQualityComponent, Double> airQualityComponents;
+    private Map<String, String> airQualityComponents;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -40,7 +42,6 @@ public class Pollution extends AuditEntity {
     public static class Mapper {
         public static Pollution fromCommand(CreateNewPollutionCommand createNewPollutionCommand, City city) {
             var pollution = Pollution.builder()
-                    .id(UUID.randomUUID())
                     .city(city)
                     .airQualityComponents(createNewPollutionCommand.airQualityComponents())
                     .date(createNewPollutionCommand.date())

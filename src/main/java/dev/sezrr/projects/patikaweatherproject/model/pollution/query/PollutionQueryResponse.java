@@ -1,7 +1,6 @@
 package dev.sezrr.projects.patikaweatherproject.model.pollution.query;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import dev.sezrr.projects.patikaweatherproject.core.model.AirQualityComponent;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -13,7 +12,7 @@ import java.util.UUID;
 public record PollutionQueryResponse(
         UUID id,
         String cityName,
-        Map<AirQualityComponent, Double> airQualityComponents,
+        Map<String, String> airQualityComponents,
         LocalDate date,
         boolean isActive
 )

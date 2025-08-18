@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record GetCityGeoCoordinatesQueryResponse(
         UUID id,
+        String name,
         @JsonUnwrapped GeospatialCoordinates geospatialCoordinates
 )
 {

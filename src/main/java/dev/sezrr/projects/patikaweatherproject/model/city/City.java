@@ -68,6 +68,7 @@ public class City
         {
             return City.builder()
                     .id(getCityGeoCoordinatesQueryResponse.id())
+                    .name(getCityGeoCoordinatesQueryResponse.name())
                     .geospatialCoordinates(getCityGeoCoordinatesQueryResponse.geospatialCoordinates())
                     .build();
         }

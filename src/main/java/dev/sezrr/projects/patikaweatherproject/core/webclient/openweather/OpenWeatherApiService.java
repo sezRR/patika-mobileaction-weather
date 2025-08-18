@@ -1,6 +1,6 @@
 package dev.sezrr.projects.patikaweatherproject.core.webclient.openweather;
 
-import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model.OWAPollutionHistoryQueryResponse;
+import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model.OWAPollutionHistory;
 import dev.sezrr.projects.patikaweatherproject.model.city.query.CityQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.query.getcitypolllution.GetCityPollutionQueryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class OpenWeatherApiService {
                 .blockOptional();
     }
 
-    public Optional<OWAPollutionHistoryQueryResponse> getPollutionHistoryByCityName(GetCityPollutionQueryRequest getCityPollutionQueryRequest)
+    public Optional<OWAPollutionHistory.QueryResponse> getPollutionHistoryByCityName(GetCityPollutionQueryRequest getCityPollutionQueryRequest)
     {
         // TODO: We can add retry mechanism here
         var startMillis = getCityPollutionQueryRequest.dateFilterObject().getStart().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
@@ -52,7 +52,7 @@ public class OpenWeatherApiService {
                         .build()
                 )
                 .retrieve()
-                .bodyToMono(OWAPollutionHistoryQueryResponse.class)
+                .bodyToMono(OWAPollutionHistory.QueryResponse.class)
                 .blockOptional();
     }
 }
