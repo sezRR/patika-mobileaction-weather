@@ -80,6 +80,7 @@ public class PollutionServiceImpl implements PollutionService
                 .toList());
 
         dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
+        dateFilterObject.setStart(dateFilterObject.getEnd().minusDays(Math.max(0, pageable.getPageSize() - 1)));
         var expectedDays = Math.min(ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1, pageable.getPageSize());
         if (pollutions.size() < expectedDays) {
             var missingDates = DateHelper.findMissingDatesInRange(
@@ -111,13 +112,13 @@ public class PollutionServiceImpl implements PollutionService
                     continue;
                 }
 
-                // TODO: WE SHOULD SEPARATE DAYS IN HERE TOO
                 classifyComponentsAndCreateNewPollution(cityName, range, pollutionHistory, newPollutionCmds);
-                //
             }
 
             var newPollutions = newPollutionCmds.stream().map(cmd -> Pollution.Mapper.fromCommand(cmd, City.Mapper.fromQueryResponse(cityGeoCoordinates))).toList();
             var savedPollutions = pollutionRepository.saveAll(newPollutions);
+
+            // TODO: FIX, SORT IS NOT DETERMINISTIC
             pollutions.addAll(savedPollutions.stream()
                     .map(Pollution.Mapper::toQueryResponse)
                     .toList());
@@ -134,46 +135,57 @@ public class PollutionServiceImpl implements PollutionService
         var days = pollutionHistoryData.size() / 24;
         log.info("{} days", pollutionHistoryData.size() / 24);
 
-        final List<Double> coValues = pollutionHistoryData.stream()
-                .map(p -> p.getComponents().getCo())
-                .toList();
+        for (int i = 0; i < days; i++) {
+            var startIndex = i * 24;
+            var endIndex = startIndex + 24;
 
-        final List<Double> o3Values = pollutionHistoryData.stream()
-                .map(p -> p.getComponents().getO3())
-                .toList();
+            var dailyData = pollutionHistoryData.subList(startIndex, endIndex);
+            if (dailyData.isEmpty()) {
+                log.warn("No pollution data found for city {} on day {}", cityName, range.getStart().plusDays(i));
+                continue;
+            }
 
-        final List<Double> so2Values = pollutionHistoryData.stream()
-                .map(p -> p.getComponents().getSo2())
-                .toList();
+            final List<Double> coValues = dailyData.stream()
+                    .map(p -> p.getComponents().getCo())
+                    .toList();
 
-        var categoryCO = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                new AQICOCategorizerStrategy(),
-                coValues
-        );
-        log.info("Calculated CO category: {}", categoryCO);
+            final List<Double> o3Values = dailyData.stream()
+                    .map(p -> p.getComponents().getO3())
+                    .toList();
 
-        var categoryO3 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                new AQIO3CategorizerStrategy(),
-                o3Values
-        );
-        log.info("Calculated O3 category: {}", categoryO3);
+            final List<Double> so2Values = dailyData.stream()
+                    .map(p -> p.getComponents().getSo2())
+                    .toList();
 
-        var categorySO2 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                new AQISO2CategorizerStrategy(),
-                so2Values
-        );
-        log.info("Calculated SO2 category: {}", categorySO2);
+            var categoryCO = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
+                    new AQICOCategorizerStrategy(),
+                    coValues
+            );
+            log.info("Calculated CO category: {}", categoryCO);
 
-        var createNewPollutionCommand = CreateNewPollutionCommand.builder()
-                .cityName(cityName)
-                .date(range.getStart())
-                .airQualityComponents(Map.of(
-                        AirQualityComponent.CO.name(), categoryCO.getCategory(),
-                        AirQualityComponent.O3.name(), categoryO3.getCategory(),
-                        AirQualityComponent.SO2.name(), categorySO2.getCategory()
-                ))
-                .build();
-        newPollutionCmds.add(createNewPollutionCommand);
+            var categoryO3 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
+                    new AQIO3CategorizerStrategy(),
+                    o3Values
+            );
+            log.info("Calculated O3 category: {}", categoryO3);
+
+            var categorySO2 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
+                    new AQISO2CategorizerStrategy(),
+                    so2Values
+            );
+            log.info("Calculated SO2 category: {}", categorySO2);
+
+            var createNewPollutionCommand = CreateNewPollutionCommand.builder()
+                    .cityName(cityName)
+                    .date(range.getStart().plusDays(i))
+                    .airQualityComponents(Map.of(
+                            AirQualityComponent.CO.name(), categoryCO.getCategory(),
+                            AirQualityComponent.O3.name(), categoryO3.getCategory(),
+                            AirQualityComponent.SO2.name(), categorySO2.getCategory()
+                    ))
+                    .build();
+            newPollutionCmds.add(createNewPollutionCommand);
+        }
     }
 
     @Override
