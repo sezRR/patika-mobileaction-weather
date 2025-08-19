@@ -79,8 +79,29 @@ public class PollutionServiceImpl implements PollutionService
                 .map(Pollution.Mapper::toQueryResponse)
                 .toList());
 
-        dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
-        dateFilterObject.setStart(dateFilterObject.getEnd().minusDays(Math.max(0, pageable.getPageSize() - 1)));
+//        if (pageable.getPageSize() < days)
+//        {
+//            dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
+//            dateFilterObject.setStart(dateFilterObject.getEnd().minusDays(Math.max(0, pageable.getPageSize() - 1)));
+//        }
+        if (pageable.getOffset() > 0)
+        {
+            dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
+
+            if (dateFilterObject.getStart().isAfter(dateFilterObject.getEnd())) {
+                return List.of();
+            }
+        }
+
+        var days = ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1;
+
+        if (days > pageable.getPageSize())
+        {
+            dateFilterObject.setStart(dateFilterObject.getEnd().plusDays(Math.max(pageable.getPageSize() - 1, 0)));
+            log.warn("Date range for city {} is too large. Adjusting to {}..{}.",
+                    cityName, dateFilterObject.getStart(), dateFilterObject.getEnd());
+        }
+
         var expectedDays = Math.min(ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1, pageable.getPageSize());
         if (pollutions.size() < expectedDays) {
             var missingDates = DateHelper.findMissingDatesInRange(
@@ -117,8 +138,8 @@ public class PollutionServiceImpl implements PollutionService
 
             var newPollutions = newPollutionCmds.stream().map(cmd -> Pollution.Mapper.fromCommand(cmd, City.Mapper.fromQueryResponse(cityGeoCoordinates))).toList();
             var savedPollutions = pollutionRepository.saveAll(newPollutions);
+            savedPollutions.sort(new Pollution.Sort.SortByDate());
 
-            // TODO: FIX, SORT IS NOT DETERMINISTIC
             pollutions.addAll(savedPollutions.stream()
                     .map(Pollution.Mapper::toQueryResponse)
                     .toList());

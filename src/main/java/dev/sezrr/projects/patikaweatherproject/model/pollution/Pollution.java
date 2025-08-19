@@ -12,6 +12,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,7 +23,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "pollutions")
-public class Pollution extends AuditEntity {
+public class Pollution extends AuditEntity
+{
     @Id
     @UuidV7
     private UUID id;
@@ -67,6 +69,19 @@ public class Pollution extends AuditEntity {
                     .airQualityComponents(pollutionQueryResponse.airQualityComponents())
                     .date(pollutionQueryResponse.date())
                     .build();
+        }
+    }
+
+    public static class Sort {
+        public static class SortByDate implements Comparator<Pollution>
+        {
+            @Override
+            public int compare(Pollution o1, Pollution o2) {
+                if (o1.getDate() == null || o2.getDate() == null) {
+                    return 0;
+                }
+                return o2.getDate().compareTo(o1.getDate());
+            }
         }
     }
 }
