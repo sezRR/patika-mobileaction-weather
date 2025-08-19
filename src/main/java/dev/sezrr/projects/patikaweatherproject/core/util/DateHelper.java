@@ -1,13 +1,15 @@
 package dev.sezrr.projects.patikaweatherproject.core.util;
 
 import dev.sezrr.projects.patikaweatherproject.core.model.DateFilterObject;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class DateHelper {
     public static List<LocalDate> findMissingDatesInRange(DateFilterObject dateFilterObject, List<LocalDate> existingDates) {
-        if (!dateFilterObject.isValidRange())
+        if (!DateFilterObject.Validator.isValid(dateFilterObject))
         {
             throw new IllegalArgumentException("Invalid date range provided.");
         }
@@ -70,5 +72,35 @@ public class DateHelper {
         intervals.add(new DateFilterObject(sorted.get(start), sorted.get(left)));
 
         return intervals;
+    }
+
+    /**
+     * Adjusts the date range within the pagination limits.
+     * If the offset is greater than 0, it reduces the end date by the offset days.
+     * If the start date becomes after the end date, it returns null.
+     * If the range exceeds the page size, it adjusts the start date to ensure the range
+     * fits within the page size.
+     * @param dateFilterObject the date filter object containing start and end dates
+     * @param pageable the pageable object containing pagination information
+     * @return the adjusted date filter object or null if the range is invalid
+     */
+    public static DateFilterObject adjustRangeWithinPagination(DateFilterObject dateFilterObject, Pageable pageable)
+    {
+        if (pageable.getOffset() > 0)
+        {
+            dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
+
+            if (dateFilterObject.getStart().isAfter(dateFilterObject.getEnd())) {
+                return null;
+            }
+        }
+
+        var days = ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1;
+        if (days > pageable.getPageSize())
+        {
+            dateFilterObject.setStart(dateFilterObject.getEnd().plusDays(Math.max(pageable.getPageSize() - 1, 0)));
+        }
+
+        return dateFilterObject;
     }
 }

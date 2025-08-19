@@ -4,20 +4,25 @@ import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.AQICo
 import lombok.Getter;
 
 @Getter
-public abstract class AQIComponent implements AQIComponentCategorizerStrategy {
+public abstract class BaseAQIComponentCategorizerStrategy implements AQIComponentCategorizerStrategy {
     protected final AirQualityComponent airQualityComponent;
     protected final AveragingPeriod averagingPeriod;
 
-    protected AQIComponent(AirQualityComponent airQualityComponent, AveragingPeriod averagingPeriod) {
+    protected BaseAQIComponentCategorizerStrategy(AirQualityComponent airQualityComponent, AveragingPeriod averagingPeriod) {
         this.airQualityComponent = airQualityComponent;
         this.averagingPeriod = averagingPeriod;
     }
 
-    protected AQIComponent(String airQualityComponent, AveragingPeriod averagingPeriod) {
+    protected BaseAQIComponentCategorizerStrategy(String airQualityComponent, AveragingPeriod averagingPeriod) {
         this(AirQualityComponent.valueOf(airQualityComponent.toUpperCase()), averagingPeriod);
     }
 
     public boolean isAverageValueValid(Double averageValue) {
         return averageValue != null && !averageValue.isNaN() && !averageValue.isInfinite() && averageValue > 0;
+    }
+
+    public static String getClassifierStrategyName(AirQualityComponent airQualityComponent)
+    {
+        return airQualityComponent.name() + "_CATEGORIZER";
     }
 }

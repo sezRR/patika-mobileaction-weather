@@ -29,7 +29,7 @@ public class PollutionsController
             description = "Retrieves a paginated list of all pollution records with their details."
     )
     public ResponseEntity<List<PollutionQueryResponse>> getAllPollutions(
-            @PageableDefault(size = 5) @SortDefault(sort = "cityName", direction = Sort.Direction.ASC) Pageable pageable
+            @PageableDefault(size = 5) @SortDefault(sort = "date", direction = Sort.Direction.DESC) Pageable pageable
     )
     {
         return ResponseEntity.success(pollutionService.getAllPollutions(pageable));

@@ -1,11 +1,13 @@
 package dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.o3;
 
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AQICategory;
-import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AQIComponent;
+import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.BaseAQIComponentCategorizerStrategy;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AirQualityComponent;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AveragingPeriod;
+import org.springframework.stereotype.Component;
 
-public class AQIO3CategorizerStrategy extends AQIComponent {
+@Component("O3_CATEGORIZER")
+public class AQIO3CategorizerStrategy extends BaseAQIComponentCategorizerStrategy {
     public AQIO3CategorizerStrategy() {
         super(AirQualityComponent.O3, AveragingPeriod.HOURS_8);
     }

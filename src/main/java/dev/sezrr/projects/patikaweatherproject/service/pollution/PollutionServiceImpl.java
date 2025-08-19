@@ -6,9 +6,6 @@ import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.OpenWe
 import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model.OWAPollutionHistory;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.AQIAveragingService;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AirQualityComponent;
-import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.co.AQICOCategorizerStrategy;
-import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.o3.AQIO3CategorizerStrategy;
-import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.so2.AQISO2CategorizerStrategy;
 import dev.sezrr.projects.patikaweatherproject.model.city.City;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.Pollution;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.command.CreateNewPollutionCommand;
@@ -22,12 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -59,15 +52,9 @@ public class PollutionServiceImpl implements PollutionService
         var cityGeoCoordinates = cityRepository.findGeoCoordinatesByName(normalizedCityName)
                 .orElseThrow(() -> new EntityNotFoundException("City not found: " + normalizedCityName));
 
-        if (dateFilterObject == null || !dateFilterObject.isValidRange())
-        {
-            dateFilterObject = DateFilterObject.builder()
-                    .start(LocalDate.now().minusWeeks(1)) // Default to 1 year ago
-                    .end(LocalDate.now()) // Default to now
-                    .build();
-
-            log.warn("Invalid or missing date range for city {}. Defaulting to {}..{}.",
-                    cityName, dateFilterObject.getStart(), dateFilterObject.getEnd());
+        dateFilterObject = DateFilterObject.Validator.normalizeMissingDateFilterObject(dateFilterObject);
+        if (!DateFilterObject.Validator.isValid(dateFilterObject)) {
+            throw new IllegalArgumentException("Invalid date range provided.");
         }
 
         var pollutions = new ArrayList<>(pollutionRepository.findAllByCityNameAndInRange(
@@ -79,80 +66,71 @@ public class PollutionServiceImpl implements PollutionService
                 .map(Pollution.Mapper::toQueryResponse)
                 .toList());
 
-//        if (pageable.getPageSize() < days)
-//        {
-//            dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
-//            dateFilterObject.setStart(dateFilterObject.getEnd().minusDays(Math.max(0, pageable.getPageSize() - 1)));
-//        }
-        if (pageable.getOffset() > 0)
-        {
-            dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
-
-            if (dateFilterObject.getStart().isAfter(dateFilterObject.getEnd())) {
-                return List.of();
-            }
-        }
-
-        var days = ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1;
-
-        if (days > pageable.getPageSize())
-        {
-            dateFilterObject.setStart(dateFilterObject.getEnd().plusDays(Math.max(pageable.getPageSize() - 1, 0)));
-            log.warn("Date range for city {} is too large. Adjusting to {}..{}.",
-                    cityName, dateFilterObject.getStart(), dateFilterObject.getEnd());
-        }
+        var adjustedDateRange = DateHelper.adjustRangeWithinPagination(dateFilterObject, pageable);
+        if (adjustedDateRange == null)
+            return List.of();
 
         var expectedDays = Math.min(ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1, pageable.getPageSize());
-        if (pollutions.size() < expectedDays) {
-            var missingDates = DateHelper.findMissingDatesInRange(
-                    dateFilterObject,
-                    pollutions.stream()
-                            .map(PollutionQueryResponse::date)
-                            .toList()
-            );
+        if (pollutions.size() >= expectedDays) {
+            return pollutions;
+        }
 
-            var ranges = DateHelper.generateIntervals(missingDates);
+        var missingDates = DateHelper.findMissingDatesInRange(
+                dateFilterObject,
+                pollutions.stream()
+                        .map(PollutionQueryResponse::date)
+                        .toList()
+        );
 
-            var newPollutionCmds = new ArrayList<CreateNewPollutionCommand>();
-            for (var range : ranges) {
-                log.warn("Missing pollution data for city {} on dates: {} to {}",
+        var ranges = DateHelper.generateIntervals(missingDates);
+
+        var newPollutionCmds = new ArrayList<CreateNewPollutionCommand>();
+        for (var range : ranges) {
+            log.warn("Missing pollution data for city {} on dates: {} to {}",
+                    cityName, range.getStart(), range.getEnd());
+
+            var getCityPollutionQueryRequest = GetCityPollutionQueryRequest.builder()
+                    .geospatialCoordinates(cityGeoCoordinates.geospatialCoordinates())
+                    .dateFilterObject(DateFilterObject.builder()
+                            .start(range.getStart())
+                            .end(range.getEnd())
+                            .build())
+                    .build();
+
+            var pollutionHistory = openWeatherApiService.getPollutionHistoryByCityName(getCityPollutionQueryRequest);
+            if (pollutionHistory.isEmpty()) {
+                log.error("Failed to fetch pollution data for city {} in the range {} to {}.",
                         cityName, range.getStart(), range.getEnd());
-
-                var getCityPollutionQueryRequest = GetCityPollutionQueryRequest.builder()
-                        .geospatialCoordinates(cityGeoCoordinates.geospatialCoordinates())
-                        .dateFilterObject(DateFilterObject.builder()
-                                .start(range.getStart())
-                                .end(range.getEnd())
-                                .build())
-                        .build();
-
-                var pollutionHistory = openWeatherApiService.getPollutionHistoryByCityName(getCityPollutionQueryRequest);
-                if (pollutionHistory.isEmpty()) {
-                    log.error("Failed to fetch pollution data for city {} in the range {} to {}.",
-                            cityName, range.getStart(), range.getEnd());
-                    continue;
-                }
-
-                classifyComponentsAndCreateNewPollution(cityName, range, pollutionHistory, newPollutionCmds);
+                continue;
             }
 
-            var newPollutions = newPollutionCmds.stream().map(cmd -> Pollution.Mapper.fromCommand(cmd, City.Mapper.fromQueryResponse(cityGeoCoordinates))).toList();
-            var savedPollutions = pollutionRepository.saveAll(newPollutions);
-            savedPollutions.sort(new Pollution.Sort.SortByDate());
-
-            pollutions.addAll(savedPollutions.stream()
-                    .map(Pollution.Mapper::toQueryResponse)
-                    .toList());
-
-            log.warn("Not all days have pollution data for city {} in the range {} to {}. Found: {}",
-                    cityName, dateFilterObject.getStart(), dateFilterObject.getEnd(), pollutions.size());
+            classifyComponentsAndCreateNewPollution(cityName, range, pollutionHistory, newPollutionCmds);
         }
+
+        var newPollutions = newPollutionCmds.stream().map(cmd -> Pollution.Mapper.fromCommand(cmd, City.Mapper.fromQueryResponse(cityGeoCoordinates))).toList();
+        var savedPollutions = pollutionRepository.saveAll(newPollutions);
+        savedPollutions.sort(new Pollution.Sort.SortByDate());
+
+        pollutions.addAll(savedPollutions.stream()
+                .map(Pollution.Mapper::toQueryResponse)
+                .toList());
+
+        log.warn("Not all days have pollution data for city {} in the range {} to {}. Found: {}",
+                cityName, dateFilterObject.getStart(), dateFilterObject.getEnd(), pollutions.size());
 
         return pollutions;
     }
 
     private void classifyComponentsAndCreateNewPollution(String cityName, DateFilterObject range, Optional<OWAPollutionHistory.QueryResponse> pollutionHistory, ArrayList<CreateNewPollutionCommand> newPollutionCmds) {
-        var pollutionHistoryData = pollutionHistory.get().getList();
+        var pollutionHistoryData = pollutionHistory.orElseThrow(
+                () -> new IllegalArgumentException("Pollution history data is empty for city: " + cityName)
+        ).getList();
+
+        if (pollutionHistoryData.isEmpty()) {
+            log.warn("No pollution data found for city {} in the range {} to {}.", cityName, range.getStart(), range.getEnd());
+            return;
+        }
+
         var days = pollutionHistoryData.size() / 24;
         log.info("{} days", pollutionHistoryData.size() / 24);
 
@@ -166,43 +144,21 @@ public class PollutionServiceImpl implements PollutionService
                 continue;
             }
 
-            final List<Double> coValues = dailyData.stream()
-                    .map(p -> p.getComponents().getCo())
-                    .toList();
-
-            final List<Double> o3Values = dailyData.stream()
-                    .map(p -> p.getComponents().getO3())
-                    .toList();
-
-            final List<Double> so2Values = dailyData.stream()
-                    .map(p -> p.getComponents().getSo2())
-                    .toList();
-
-            var categoryCO = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                    new AQICOCategorizerStrategy(),
-                    coValues
+            var aqiComponentsWithValues = Map.of(
+                    AirQualityComponent.CO, dailyData.stream().map(p -> p.getComponents().getCo()).toList(),
+                    AirQualityComponent.O3, dailyData.stream().map(p -> p.getComponents().getO3()).toList(),
+                    AirQualityComponent.SO2, dailyData.stream().map(p -> p.getComponents().getSo2()).toList()
             );
-            log.info("Calculated CO category: {}", categoryCO);
 
-            var categoryO3 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                    new AQIO3CategorizerStrategy(),
-                    o3Values
-            );
-            log.info("Calculated O3 category: {}", categoryO3);
-
-            var categorySO2 = aqiAveragingService.calculateAveragingPeriodAndCategorizeComponent(
-                    new AQISO2CategorizerStrategy(),
-                    so2Values
-            );
-            log.info("Calculated SO2 category: {}", categorySO2);
+            var categorizedComponents = aqiAveragingService.calculateAveragingPeriodsAndCategorizeComponents(aqiComponentsWithValues);
 
             var createNewPollutionCommand = CreateNewPollutionCommand.builder()
                     .cityName(cityName)
                     .date(range.getStart().plusDays(i))
                     .airQualityComponents(Map.of(
-                            AirQualityComponent.CO.name(), categoryCO.getCategory(),
-                            AirQualityComponent.O3.name(), categoryO3.getCategory(),
-                            AirQualityComponent.SO2.name(), categorySO2.getCategory()
+                            AirQualityComponent.CO.name(), categorizedComponents.get(AirQualityComponent.CO),
+                            AirQualityComponent.O3.name(), categorizedComponents.get(AirQualityComponent.O3),
+                            AirQualityComponent.SO2.name(), categorizedComponents.get(AirQualityComponent.SO2)
                     ))
                     .build();
             newPollutionCmds.add(createNewPollutionCommand);

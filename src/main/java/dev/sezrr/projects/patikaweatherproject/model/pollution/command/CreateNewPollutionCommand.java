@@ -1,6 +1,5 @@
 package dev.sezrr.projects.patikaweatherproject.model.pollution.command;
 
-import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AirQualityComponent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
