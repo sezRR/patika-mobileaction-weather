@@ -9,11 +9,6 @@ import java.util.*;
 
 public class DateHelper {
     public static List<LocalDate> findMissingDatesInRange(DateFilterObject dateFilterObject, List<LocalDate> existingDates) {
-        if (!DateFilterObject.Validator.isValid(dateFilterObject))
-        {
-            throw new IllegalArgumentException("Invalid date range provided.");
-        }
-
         Set<LocalDate> existing = existingDates == null ?
                 Collections.emptySet()
                 : new HashSet<>(existingDates);

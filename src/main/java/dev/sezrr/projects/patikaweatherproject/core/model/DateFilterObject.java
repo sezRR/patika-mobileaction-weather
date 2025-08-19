@@ -36,67 +36,45 @@ public class DateFilterObject {
         return Objects.hash(start, end);
     }
 
-    // TODO: Custom constraint annotations, or get rid of statics
-    public static class Validator
+//    @AssertTrue(message = "Invalid date range.")
+//    public boolean isValid()
+//    {
+//        return isValidRange()
+//                && datesShouldNotBeforeFromGivenDate()
+//                && dateRangesShouldNotMoreThanOneYear();
+//    }
+
+    @AssertTrue(message = "Start date must be before or equal to end date.")
+    public boolean hasValidRange()
     {
-        public static DateFilterObject normalizeMissingDateFilterObject(DateFilterObject dateFilterObject) {
-            if (dateFilterObject != null)
-                return dateFilterObject;
+        return start != null && end != null && !start.isAfter(end);
+    }
 
-            var yesterday = LocalDate.now().minusDays(1).atStartOfDay();
-            var newDateFilterObject = DateFilterObject.builder()
-                    .start(LocalDate.from(yesterday.minusWeeks(1)))
-                    .end(LocalDate.from(yesterday))
-                    .build();
+    @AssertTrue(message = "Start and end date must not be before from the 2020/11/27.")
+    public boolean isAfterBusinessRuleDate()
+    {
+        var businessRuleDate = LocalDate.of(2020, 11, 27);
+        return start.isAfter(businessRuleDate) && end.isAfter(businessRuleDate);
+    }
 
-            log.warn("Missing date range. Defaulting to {}..{}.", newDateFilterObject.getStart(), newDateFilterObject.getEnd());
+    @AssertTrue(message = "Date ranges should not be more than one year apart.")
+    public boolean isWithinOneYearRange()
+    {
+        return !start.isBefore(end.minusYears(1));
+    }
 
-            return newDateFilterObject;
-        }
+    public static DateFilterObject normalizeMissingDateFilterObject(DateFilterObject dateFilterObject) {
+        if (dateFilterObject != null)
+            return dateFilterObject;
 
-        @AssertTrue(message = "Invalid date range.")
-        public static boolean isValid(DateFilterObject dateFilterObject)
-        {
-            return isValidRange(dateFilterObject)
-                    && datesShouldNotBeforeFromGivenDate(dateFilterObject)
-                    && dateRangesShouldNotMoreThanOneYear(dateFilterObject);
-        }
+        var yesterday = LocalDate.now().minusDays(1).atStartOfDay();
+        var newDateFilterObject = DateFilterObject.builder()
+                .start(LocalDate.from(yesterday.minusWeeks(1)))
+                .end(LocalDate.from(yesterday))
+                .build();
 
-        @AssertTrue(message = "Invalid date range.")
-        public static boolean isValid(DateFilterObject dateFilterObject, LocalDate givenDate)
-        {
-            return isValidRange(dateFilterObject)
-                    && datesShouldNotBeforeFromGivenDate(dateFilterObject, givenDate)
-                    && dateRangesShouldNotMoreThanOneYear(dateFilterObject);
-        }
+        log.warn("Missing date range. Defaulting to {}..{}.", newDateFilterObject.getStart(), newDateFilterObject.getEnd());
 
-        @AssertTrue(message = "Start date must be before or equal to end date.")
-        public static boolean isValidRange(DateFilterObject dateFilterObject)
-        {
-            return dateFilterObject.getStart() != null && dateFilterObject.getEnd() != null && !dateFilterObject.getStart().isAfter(dateFilterObject.getEnd());
-        }
-
-        @AssertTrue(message = "Start and end date must not be before from the 2020/11/27.")
-        public static boolean datesShouldNotBeforeFromGivenDate(DateFilterObject dateFilterObject)
-        {
-            var businessRuleDate = LocalDate.of(2020, 11, 27);
-            return dateFilterObject.getStart().isAfter(businessRuleDate) && dateFilterObject.getEnd().isAfter(businessRuleDate);
-        }
-
-        @AssertTrue(message = "Start and end date must not be before from the given date.")
-        public static boolean datesShouldNotBeforeFromGivenDate(DateFilterObject dateFilterObject, LocalDate givenDate)
-        {
-            if (givenDate == null) {
-                throw new IllegalArgumentException("Given date cannot be null.");
-            }
-
-            return dateFilterObject.getStart().isAfter(givenDate) && dateFilterObject.getEnd().isAfter(givenDate);
-        }
-
-        @AssertTrue(message = "Date ranges should not be more than one year apart.")
-        public static boolean dateRangesShouldNotMoreThanOneYear(DateFilterObject dateFilterObject)
-        {
-            return !dateFilterObject.getStart().isBefore(dateFilterObject.getEnd().minusYears(1));
-        }
+        return newDateFilterObject;
     }
 }

@@ -2,6 +2,7 @@ package dev.sezrr.projects.patikaweatherproject.service.pollution;
 
 import dev.sezrr.projects.patikaweatherproject.core.model.DateFilterObject;
 import dev.sezrr.projects.patikaweatherproject.core.util.DateHelper;
+import dev.sezrr.projects.patikaweatherproject.core.validation.CustomValidatorHelper;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather.OpenWeatherApiService;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather.model.OWAPollutionHistory;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.AQIAveragingService;
@@ -33,6 +34,7 @@ public class PollutionServiceImpl implements PollutionService
     private final AQIAveragingService aqiAveragingService;
     private final PollutionRepository pollutionRepository;
     private final CityRepository cityRepository;
+    private final CustomValidatorHelper customValidatorHelper;
 
     @Override
     public List<PollutionQueryResponse> getAllPollutions(Pageable pageable) {
@@ -54,10 +56,8 @@ public class PollutionServiceImpl implements PollutionService
         var cityGeoCoordinates = cityRepository.findGeoCoordinatesByName(normalizedCityName)
                 .orElseThrow(() -> new EntityNotFoundException("City not found: " + normalizedCityName));
 
-        dateFilterObject = DateFilterObject.Validator.normalizeMissingDateFilterObject(dateFilterObject);
-        if (!DateFilterObject.Validator.isValid(dateFilterObject)) {
-            throw new IllegalArgumentException("Invalid date range provided.");
-        }
+        dateFilterObject = DateFilterObject.normalizeMissingDateFilterObject(dateFilterObject);
+        customValidatorHelper.validateOrThrow(dateFilterObject, "Invalid date range provided.");
 
         // Fetch pollution data
         var pollutions = new ArrayList<>(pollutionRepository.findAllByCityIdAndInRange(

@@ -31,7 +31,7 @@ public class CustomValidationException extends RuntimeException {
         // Create custom ValidationError response
         ValidationError response = new ValidationError(
                 errorDeclarations,
-                new ErrorStatus(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
+                new ErrorStatus("VALIDATION_ERROR", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name()),
                 ex.getMessage()
         );
 
