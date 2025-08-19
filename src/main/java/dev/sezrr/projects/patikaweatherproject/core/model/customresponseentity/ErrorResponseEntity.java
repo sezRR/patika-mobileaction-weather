@@ -1,6 +1,6 @@
 package dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity;
 
-import dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.error.Error;
+import dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.error.common.Error;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 

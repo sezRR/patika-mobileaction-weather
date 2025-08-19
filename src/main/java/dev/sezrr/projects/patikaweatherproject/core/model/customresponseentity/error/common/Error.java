@@ -1,4 +1,4 @@
-package dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.error;
+package dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.error.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
