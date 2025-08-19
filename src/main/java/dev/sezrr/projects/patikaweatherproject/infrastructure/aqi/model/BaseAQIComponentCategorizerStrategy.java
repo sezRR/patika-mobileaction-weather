@@ -3,6 +3,8 @@ package dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model;
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.strategy.AQIComponentCategorizerStrategy;
 import lombok.Getter;
 
+import java.util.Optional;
+
 @Getter
 public abstract class BaseAQIComponentCategorizerStrategy implements AQIComponentCategorizerStrategy {
     protected final AirQualityComponent airQualityComponent;
@@ -18,8 +20,23 @@ public abstract class BaseAQIComponentCategorizerStrategy implements AQIComponen
     }
 
     public boolean isAverageValueValid(Double averageValue) {
-        return averageValue != null && !averageValue.isNaN() && !averageValue.isInfinite() && averageValue > 0;
+        return averageValue != null && !averageValue.isNaN() && !averageValue.isInfinite() && averageValue >= 0;
     }
+
+    public AQICategory categorize(Double averageValue)
+    {
+        if (!isAverageValueValid(averageValue)) {
+            throw new IllegalArgumentException("Average value must be a valid number.");
+        }
+
+        if (averageValue < 0) {
+            return AQICategory.NO_DATA;
+        }
+
+        return categorizeInternal(averageValue);
+    }
+
+    protected abstract AQICategory categorizeInternal(Double averageValue);
 
     public static String getClassifierStrategyName(AirQualityComponent airQualityComponent)
     {

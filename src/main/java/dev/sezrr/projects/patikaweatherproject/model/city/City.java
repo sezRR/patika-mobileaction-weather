@@ -10,11 +10,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.text.WordUtils;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Setter
 @Getter
 @Entity
@@ -46,7 +49,7 @@ public class City
         public static City fromCommand(CreateNewCityCommand createNewCityCommand)
         {
             return City.builder()
-                    .name(createNewCityCommand.name())
+                    .name(normalizedName(createNewCityCommand.name()))
                     .geospatialCoordinates(createNewCityCommand.geospatialCoordinates())
                     .country(createNewCityCommand.country())
                     .state(createNewCityCommand.state())
@@ -73,9 +76,16 @@ public class City
                     .build();
         }
     }
-    
+
     public static String normalizedName(String name)
     {
-        return StringUtils.capitalize(StringUtils.lowerCase(name));
+        if (name == null || name.isBlank()) {
+            log.warn("City name is null or blank, returning null.");
+            return null;
+        }
+
+        var locale = LocaleUtils.toLocale("en_US");
+
+        return WordUtils.capitalizeFully(name.toLowerCase(locale), ' ');
     }
 }

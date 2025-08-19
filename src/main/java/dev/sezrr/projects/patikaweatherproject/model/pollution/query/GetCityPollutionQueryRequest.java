@@ -1,4 +1,4 @@
-package dev.sezrr.projects.patikaweatherproject.model.pollution.query.getcitypolllution;
+package dev.sezrr.projects.patikaweatherproject.model.pollution.query;
 
 import dev.sezrr.projects.patikaweatherproject.core.model.DateFilterObject;
 import dev.sezrr.projects.patikaweatherproject.core.model.GeospatialCoordinates;

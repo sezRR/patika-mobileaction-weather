@@ -1,8 +1,8 @@
-package dev.sezrr.projects.patikaweatherproject.core.webclient.openweather;
+package dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather;
 
-import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model.OWAPollutionHistory;
+import dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather.model.OWAPollutionHistory;
 import dev.sezrr.projects.patikaweatherproject.model.city.query.CityQueryResponse;
-import dev.sezrr.projects.patikaweatherproject.model.pollution.query.getcitypolllution.GetCityPollutionQueryRequest;
+import dev.sezrr.projects.patikaweatherproject.model.pollution.query.GetCityPollutionQueryRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;

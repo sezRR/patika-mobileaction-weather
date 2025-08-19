@@ -6,6 +6,8 @@ import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AirQuali
 import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AveragingPeriod;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component("O3_CATEGORIZER")
 public class AQIO3CategorizerStrategy extends BaseAQIComponentCategorizerStrategy {
     public AQIO3CategorizerStrategy() {
@@ -13,11 +15,7 @@ public class AQIO3CategorizerStrategy extends BaseAQIComponentCategorizerStrateg
     }
 
     @Override
-    public AQICategory categorize(Double averageValue) {
-        if (!super.isAverageValueValid(averageValue)) {
-            throw new IllegalArgumentException("Average value must be a valid number.");
-        }
-
+    protected AQICategory categorizeInternal(Double averageValue) {
         if (averageValue <= 50.9) {
             return AQICategory.GOOD;
         } else if (averageValue <= 100.9) {

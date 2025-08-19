@@ -98,7 +98,7 @@ public class DateHelper {
         var days = ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1;
         if (days > pageable.getPageSize())
         {
-            dateFilterObject.setStart(dateFilterObject.getEnd().plusDays(Math.max(pageable.getPageSize() - 1, 0)));
+            dateFilterObject.setStart(dateFilterObject.getEnd().minusDays(Math.max(pageable.getPageSize() - 1, 0)));
         }
 
         return dateFilterObject;

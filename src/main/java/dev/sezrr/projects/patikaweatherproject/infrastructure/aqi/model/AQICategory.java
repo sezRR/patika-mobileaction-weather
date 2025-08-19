@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum AQICategory
 {
+    NO_DATA("No Data"),
     GOOD("Good"),
     SATISFACTORY("Satisfactory"),
     MODERATE("Moderate"),

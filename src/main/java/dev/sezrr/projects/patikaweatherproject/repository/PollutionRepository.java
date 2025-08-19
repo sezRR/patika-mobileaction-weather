@@ -15,7 +15,10 @@ public interface PollutionRepository extends JpaRepository<Pollution, UUID>
 {
     @Query("""
         SELECT p FROM Pollution p
-        WHERE p.city.name = :cityName AND p.date BETWEEN :start AND :end
+        WHERE p.city.id = :cityId AND p.date BETWEEN :start AND :end
     """)
-    List<Pollution> findAllByCityNameAndInRange(String cityName, LocalDate start, LocalDate end, Pageable pageable);
+    List<Pollution> findAllByCityIdAndInRange(UUID cityId, LocalDate start, LocalDate end, Pageable pageable);
+
+    long deleteAllByCityName(String cityName);
+    void deleteById(UUID id);
 }

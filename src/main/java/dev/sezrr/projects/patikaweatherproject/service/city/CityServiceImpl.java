@@ -4,7 +4,7 @@ import dev.sezrr.projects.patikaweatherproject.model.city.City;
 import dev.sezrr.projects.patikaweatherproject.model.city.command.CreateNewCityCommand;
 import dev.sezrr.projects.patikaweatherproject.model.city.query.CityQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.repository.CityRepository;
-import dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.OpenWeatherApiService;
+import dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather.OpenWeatherApiService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

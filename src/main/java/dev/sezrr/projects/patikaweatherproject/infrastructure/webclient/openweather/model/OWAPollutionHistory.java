@@ -1,4 +1,4 @@
-package dev.sezrr.projects.patikaweatherproject.core.webclient.openweather.model;
+package dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

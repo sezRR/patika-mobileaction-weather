@@ -6,10 +6,13 @@ import dev.sezrr.projects.patikaweatherproject.model.pollution.query.PollutionQu
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface PollutionService
 {
     List<PollutionQueryResponse> getAllPollutions(Pageable pageable);
     List<PollutionQueryResponse> getPollutionsByCityNameInRange(String cityName, DateFilterObject dateFilterObject, Pageable pageable);
     PollutionQueryResponse createNewPollution(CreateNewPollutionCommand createNewPollutionCommand);
+    void deletePollutionById(UUID id);
+    void deletePollutionByCityName(String cityName);
 }

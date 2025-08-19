@@ -1,4 +1,4 @@
-package dev.sezrr.projects.patikaweatherproject.core.webclient.openweather;
+package dev.sezrr.projects.patikaweatherproject.infrastructure.webclient.openweather;
 
 import dev.sezrr.projects.patikaweatherproject.core.config.OpenWeatherProperties;
 import lombok.RequiredArgsConstructor;

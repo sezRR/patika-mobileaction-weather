@@ -2,6 +2,7 @@ package dev.sezrr.projects.patikaweatherproject.controller.v1;
 
 import dev.sezrr.projects.patikaweatherproject.core.model.DateFilterObject;
 import dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.ResponseEntity;
+import dev.sezrr.projects.patikaweatherproject.model.pollution.command.CreateNewPollutionCommand;
 import dev.sezrr.projects.patikaweatherproject.model.pollution.query.PollutionQueryResponse;
 import dev.sezrr.projects.patikaweatherproject.service.pollution.PollutionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class PollutionsController
 {
     private final PollutionService pollutionService;
 
-    @GetMapping("")
+    @GetMapping("/history/all")
     @Operation(
             summary = "Get all pollutions",
             description = "Retrieves a paginated list of all pollution records with their details."
@@ -53,4 +55,39 @@ public class PollutionsController
         );
     }
 
+    @PostMapping("/history")
+    @Operation(
+            summary = "Create a new pollution record",
+            description = "Creates a new pollution record for a specific city with the provided data."
+    )
+    public ResponseEntity<PollutionQueryResponse> createNewPollution(
+            @RequestBody CreateNewPollutionCommand createNewPollutionCommand
+    )
+    {
+        return ResponseEntity.success(pollutionService.createNewPollution(createNewPollutionCommand));
+    }
+
+    @DeleteMapping("/history/{id}")
+    @Operation(
+            summary = "Delete a pollution record",
+            description = "Deletes a pollution record by its Id."
+    )
+    public ResponseEntity<Void> deletePollutionById(
+            @PathVariable UUID id
+    ) {
+        pollutionService.deletePollutionById(id);
+        return ResponseEntity.emptyNoContent();
+    }
+
+    @DeleteMapping("/history/city/{cityName}")
+    @Operation(
+            summary = "Delete all pollution records by city name",
+            description = "Deletes all pollution records for a specific city."
+    )
+    public ResponseEntity<Void> deletePollutionByCityName(
+            @PathVariable String cityName
+    ) {
+        pollutionService.deletePollutionByCityName(cityName);
+        return ResponseEntity.emptyNoContent();
+    }
 }

@@ -3,8 +3,6 @@ package dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 @Getter
 public class ResponseEntity<T> extends org.springframework.http.ResponseEntity<CustomResponseEntity<T>> {
@@ -30,5 +28,10 @@ public class ResponseEntity<T> extends org.springframework.http.ResponseEntity<C
     public static <T> ResponseEntity<T> fail(T data, HttpStatus status)
     {
         return new ResponseEntity<>(data, status, false);
+    }
+
+    public static ResponseEntity<Void> emptyNoContent()
+    {
+        return new ResponseEntity<>(null, HttpStatus.NO_CONTENT, true);
     }
 }

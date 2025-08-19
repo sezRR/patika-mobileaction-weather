@@ -24,10 +24,6 @@ public class AQIAveragingServiceImpl implements AQIAveragingService {
         }
 
         var avg = calculator.calculateAveragingPeriod(values);
-        if (!baseAqiComponentCategorizerStrategy.isAverageValueValid(avg)) {
-            throw new IllegalArgumentException("Invalid average value: " + avg);
-        }
-
         return baseAqiComponentCategorizerStrategy.categorize(avg);
     }
 
