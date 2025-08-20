@@ -7,7 +7,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-public class OWAPollutionHistory {
+public class OWAPollutionHistory
+{
     @Getter
     @Setter
     @NoArgsConstructor

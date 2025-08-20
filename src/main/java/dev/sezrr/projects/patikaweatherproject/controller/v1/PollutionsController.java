@@ -74,7 +74,8 @@ public class PollutionsController
     )
     public ResponseEntity<Void> deletePollutionById(
             @PathVariable UUID id
-    ) {
+    )
+    {
         pollutionService.deletePollutionById(id);
         return ResponseEntity.emptyNoContent();
     }
@@ -86,7 +87,8 @@ public class PollutionsController
     )
     public ResponseEntity<Void> deletePollutionByCityName(
             @PathVariable String cityName
-    ) {
+    )
+    {
         pollutionService.deletePollutionByCityName(cityName);
         return ResponseEntity.emptyNoContent();
     }

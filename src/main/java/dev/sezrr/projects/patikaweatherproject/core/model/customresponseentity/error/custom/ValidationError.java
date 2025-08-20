@@ -6,7 +6,8 @@ import dev.sezrr.projects.patikaweatherproject.core.model.customresponseentity.e
 
 import java.util.List;
 
-public class ValidationError extends Error {
+public class ValidationError extends Error
+{
     public ValidationError(List<ErrorDeclaration> errorDeclarations, ErrorStatus errorStatus, String systemMessage) {
         super(errorDeclarations, errorStatus, systemMessage);
     }

@@ -41,8 +41,10 @@ public class Pollution extends AuditEntity
     @Column(nullable = false)
     private LocalDate date;
 
-    public static class Mapper {
-        public static Pollution fromCommand(CreateNewPollutionCommand createNewPollutionCommand, City city) {
+    public static class Mapper
+    {
+        public static Pollution fromCommand(CreateNewPollutionCommand createNewPollutionCommand, City city)
+        {
             var pollution = Pollution.builder()
                     .city(city)
                     .airQualityComponents(createNewPollutionCommand.airQualityComponents())
@@ -52,7 +54,8 @@ public class Pollution extends AuditEntity
             return pollution;
         }
 
-        public static PollutionQueryResponse toQueryResponse(Pollution pollution) {
+        public static PollutionQueryResponse toQueryResponse(Pollution pollution)
+        {
             return PollutionQueryResponse.builder()
                     .id(pollution.getId())
                     .cityName(pollution.getCity().getName())
@@ -62,7 +65,8 @@ public class Pollution extends AuditEntity
                     .build();
         }
 
-        public static Pollution fromQueryResponse(PollutionQueryResponse pollutionQueryResponse, City city) {
+        public static Pollution fromQueryResponse(PollutionQueryResponse pollutionQueryResponse, City city)
+        {
             return Pollution.builder()
                     .id(pollutionQueryResponse.id())
                     .city(city)
@@ -72,7 +76,8 @@ public class Pollution extends AuditEntity
         }
     }
 
-    public static class Sort {
+    public static class Sort
+    {
         public static class SortByDate implements Comparator<Pollution>
         {
             @Override

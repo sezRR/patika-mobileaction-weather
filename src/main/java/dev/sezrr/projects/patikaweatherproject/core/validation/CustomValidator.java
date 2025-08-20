@@ -11,19 +11,23 @@ import org.springframework.validation.ObjectError;
 import java.util.Set;
 
 @Component
-public class CustomValidator {
+public class CustomValidator
+{
     private final Validator validator;
 
     @Autowired
-    public CustomValidator(Validator validator) {
+    public CustomValidator(Validator validator)
+    {
         this.validator = validator;
     }
 
-    public BindingResult validate(Object validationObject) {
+    public BindingResult validate(Object validationObject)
+    {
         Set<ConstraintViolation<Object>> violations = validator.validate(validationObject);
 
         BindingResult bindingResult = new BeanPropertyBindingResult(validationObject, "object");
-        for (var violation : violations) {
+        for (var violation : violations)
+        {
             ObjectError objectError = new ObjectError(validationObject.toString(), violation.getMessage());
             bindingResult.addError(objectError);
         }

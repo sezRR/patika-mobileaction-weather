@@ -7,5 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @IdGeneratorType(UuidV7Generator.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UuidV7 {
+public @interface UuidV7
+{
 }

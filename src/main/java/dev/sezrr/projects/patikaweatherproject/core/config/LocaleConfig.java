@@ -8,9 +8,11 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import java.util.Locale;
 
 @Configuration
-public class LocaleConfig {
+public class LocaleConfig
+{
     @Bean
-    public LocaleResolver localeResolver() {
+    public LocaleResolver localeResolver()
+    {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver("PATIKA_MA_WEATHER_LOCALE");
         localeResolver.setDefaultLocale(Locale.US);
         return localeResolver;

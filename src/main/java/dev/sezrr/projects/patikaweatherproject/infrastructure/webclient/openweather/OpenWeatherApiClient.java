@@ -10,20 +10,18 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class OpenWeatherApiClient {
+public class OpenWeatherApiClient
+{
     private final OpenWeatherProperties openWeatherProperties;
     
-    private Map<String, String> constructApiKeyUriVariable() {
+    private Map<String, String> constructApiKeyUriVariable()
+    {
         return Map.of("appid", openWeatherProperties.getApiKey());
     }
     
-    public WebClient.Builder openWeatherApiClientBuilder() {
-        return WebClient.builder()
-                .baseUrl(openWeatherProperties.getBaseUrl());
-    }
-    
     @Bean
-    public WebClient openWeatherGeocodingApiClient() {
+    public WebClient openWeatherGeocodingApiClient()
+    {
         return WebClient.builder()
                 .baseUrl(openWeatherProperties.getBaseUrl() + openWeatherProperties.getGeoPath())
                 .defaultUriVariables(constructApiKeyUriVariable())
@@ -31,7 +29,8 @@ public class OpenWeatherApiClient {
     }
 
     @Bean
-    public WebClient openWeatherAirPollutionApiClient() {
+    public WebClient openWeatherAirPollutionApiClient()
+    {
         return WebClient.builder()
                 .baseUrl(openWeatherProperties.getBaseUrl() + openWeatherProperties.getAirPollutionPath())
                 .defaultUriVariables(constructApiKeyUriVariable())

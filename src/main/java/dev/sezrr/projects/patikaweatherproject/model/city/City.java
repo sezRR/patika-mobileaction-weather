@@ -49,7 +49,7 @@ public class City
         public static City fromCommand(CreateNewCityCommand createNewCityCommand)
         {
             return City.builder()
-                    .name(normalizedName(createNewCityCommand.name()))
+                    .name(normalizedName(createNewCityCommand.name().getCityName()))
                     .geospatialCoordinates(createNewCityCommand.geospatialCoordinates())
                     .country(createNewCityCommand.country())
                     .state(createNewCityCommand.state())
@@ -79,7 +79,8 @@ public class City
 
     public static String normalizedName(String name)
     {
-        if (name == null || name.isBlank()) {
+        if (name == null || name.isBlank())
+        {
             log.warn("City name is null or blank, returning null.");
             return null;
         }

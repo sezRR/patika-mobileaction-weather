@@ -1,5 +1,6 @@
 package dev.sezrr.projects.patikaweatherproject.service.pollution;
 
+import dev.sezrr.projects.patikaweatherproject.core.exception.custom.DateRangeInvalidException;
 import dev.sezrr.projects.patikaweatherproject.core.model.DateFilterObject;
 import dev.sezrr.projects.patikaweatherproject.core.util.DateHelper;
 import dev.sezrr.projects.patikaweatherproject.core.validation.CustomValidatorHelper;
@@ -37,7 +38,8 @@ public class PollutionServiceImpl implements PollutionService
     private final CustomValidatorHelper customValidatorHelper;
 
     @Override
-    public List<PollutionQueryResponse> getAllPollutions(Pageable pageable) {
+    public List<PollutionQueryResponse> getAllPollutions(Pageable pageable)
+    {
         return pollutionRepository.findAll(pageable)
                 .stream()
                 .map(Pollution.Mapper::toQueryResponse)
@@ -45,7 +47,8 @@ public class PollutionServiceImpl implements PollutionService
     }
 
     @Override
-    public List<PollutionQueryResponse> getPollutionsByCityNameInRange(String cityName, DateFilterObject dateFilterObject, Pageable pageable) {
+    public List<PollutionQueryResponse> getPollutionsByCityNameInRange(String cityName, DateFilterObject dateFilterObject, Pageable pageable)
+    {
         // Validation and business logic
         if (cityName == null || cityName.isBlank())
         {
@@ -57,7 +60,10 @@ public class PollutionServiceImpl implements PollutionService
                 .orElseThrow(() -> new EntityNotFoundException("City not found: " + normalizedCityName));
 
         dateFilterObject = DateFilterObject.normalizeMissingDateFilterObject(dateFilterObject);
-        customValidatorHelper.validateOrThrow(dateFilterObject, "Invalid date range provided.");
+        customValidatorHelper.validateOrThrow(
+                dateFilterObject,
+                DateRangeInvalidException::new,
+                "Invalid date range provided.");
 
         // Fetch pollution data
         var pollutions = new ArrayList<>(pollutionRepository.findAllByCityIdAndInRange(
@@ -76,7 +82,8 @@ public class PollutionServiceImpl implements PollutionService
 
         // Check if we have enough data for the requested range
         var expectedDays = Math.min(ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1, pageable.getPageSize());
-        if (pollutions.size() >= expectedDays) {
+        if (pollutions.size() >= expectedDays)
+        {
             return pollutions;
         }
 
@@ -109,7 +116,8 @@ public class PollutionServiceImpl implements PollutionService
     private ArrayList<CreateNewPollutionCommand> fetchPollutionHistoryWithinRanges(List<DateFilterObject> ranges, GetCityGeoCoordinatesQueryResponse cityGeoCoordinates)
     {
         var newPollutionCmds = new ArrayList<CreateNewPollutionCommand>();
-        for (var range : ranges) {
+        for (var range : ranges)
+        {
             log.warn("Missing pollution data for city {} on dates: {} to {}",
                     cityGeoCoordinates.name(), range.getStart(), range.getEnd());
 
@@ -122,7 +130,8 @@ public class PollutionServiceImpl implements PollutionService
                     .build();
 
             var pollutionHistory = openWeatherApiService.getPollutionHistoryByCityName(getCityPollutionQueryRequest);
-            if (pollutionHistory.isEmpty()) {
+            if (pollutionHistory.isEmpty())
+            {
                 log.error("Failed to fetch pollution data for city {} in the range {} to {}.",
                         cityGeoCoordinates.name(), range.getStart(), range.getEnd());
                 continue;
@@ -133,12 +142,14 @@ public class PollutionServiceImpl implements PollutionService
         return newPollutionCmds;
     }
 
-    private void classifyComponentsAndCreateNewPollution(String cityName, DateFilterObject range, Optional<OWAPollutionHistory.QueryResponse> pollutionHistory, ArrayList<CreateNewPollutionCommand> newPollutionCmds) {
+    private void classifyComponentsAndCreateNewPollution(String cityName, DateFilterObject range, Optional<OWAPollutionHistory.QueryResponse> pollutionHistory, ArrayList<CreateNewPollutionCommand> newPollutionCmds)
+    {
         var pollutionHistoryData = pollutionHistory.orElseThrow(
                 () -> new IllegalArgumentException("Pollution history data is empty for city: " + cityName)
         ).getList();
 
-        if (pollutionHistoryData.isEmpty()) {
+        if (pollutionHistoryData.isEmpty())
+        {
             log.warn("No pollution data found for city {} in the range {} to {}.", cityName, range.getStart(), range.getEnd());
             return;
         }
@@ -147,7 +158,8 @@ public class PollutionServiceImpl implements PollutionService
         var days = pollutionHistoryData.size() / 24;
         log.info("{} days", pollutionHistoryData.size() / 24);
 
-        for (int i = 0; i < days; i++) {
+        for (int i = 0; i < days; i++)
+        {
             var startIndex = i * 24;
             var endIndex = startIndex + 24;
 
@@ -180,7 +192,8 @@ public class PollutionServiceImpl implements PollutionService
     }
 
     @Override
-    public PollutionQueryResponse createNewPollution(CreateNewPollutionCommand createNewPollutionCommand) {
+    public PollutionQueryResponse createNewPollution(CreateNewPollutionCommand createNewPollutionCommand)
+    {
         var city = cityRepository.findCityByName(createNewPollutionCommand.cityName()).orElseThrow(
                 () -> new IllegalArgumentException("City not found: " + createNewPollutionCommand.cityName())
         );
@@ -191,13 +204,15 @@ public class PollutionServiceImpl implements PollutionService
     }
 
     @Override
-    public void deletePollutionById(UUID id) {
+    public void deletePollutionById(UUID id)
+    {
         pollutionRepository.deleteById(id);
     }
 
     @Transactional
     @Override
-    public void deletePollutionByCityName(String cityName) {
+    public void deletePollutionByCityName(String cityName)
+    {
         pollutionRepository.deleteAllByCityName(City.normalizedName(cityName));
     }
 }

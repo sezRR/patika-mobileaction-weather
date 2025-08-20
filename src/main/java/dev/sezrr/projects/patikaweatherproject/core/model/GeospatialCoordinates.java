@@ -10,7 +10,8 @@ import lombok.*;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class GeospatialCoordinates {
+public class GeospatialCoordinates
+{
     @NotNull(message = "City latitude cannot be empty.")
     Double lat;
 

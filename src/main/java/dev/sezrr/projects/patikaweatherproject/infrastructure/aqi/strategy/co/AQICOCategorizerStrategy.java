@@ -9,24 +9,33 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component("CO_CATEGORIZER")
-public class AQICOCategorizerStrategy extends BaseAQIComponentCategorizerStrategy {
-    public AQICOCategorizerStrategy() {
+public class AQICOCategorizerStrategy extends BaseAQIComponentCategorizerStrategy
+{
+    public AQICOCategorizerStrategy()
+    {
         super(AirQualityComponent.CO, AveragingPeriod.HOURS_8);
     }
 
     @Override
-    protected AQICategory categorizeInternal(Double averageValue) {
-        if (averageValue <= 1000.0) {
+    protected AQICategory categorizeInternal(Double averageValue)
+    {
+        if (averageValue <= 1000.0)
+        {
             return AQICategory.GOOD;
-        } else if (averageValue <= 2000.0) {
+        } else if (averageValue <= 2000.0)
+        {
             return AQICategory.SATISFACTORY;
-        } else if (averageValue <= 10000.0) {
+        } else if (averageValue <= 10000.0)
+        {
             return AQICategory.MODERATE;
-        } else if (averageValue <= 17000.0) {
+        } else if (averageValue <= 17000.0)
+        {
             return AQICategory.POOR;
-        } else if (averageValue <= 34000.0) {
+        } else if (averageValue <= 34000.0)
+        {
             return AQICategory.SEVERE;
-        } else {
+        } else
+        {
             return AQICategory.HAZARDOUS;
         }
     }

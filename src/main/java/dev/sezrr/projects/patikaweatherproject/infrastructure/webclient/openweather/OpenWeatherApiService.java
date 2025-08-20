@@ -16,18 +16,21 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OpenWeatherApiService {
+public class OpenWeatherApiService
+{
     private final WebClient geocodingApiClient;
     private final WebClient airPollutionApiClient;
 
     @Autowired
     public OpenWeatherApiService(@Qualifier("openWeatherGeocodingApiClient") WebClient geocodingApiClient,
-                                 @Qualifier("openWeatherAirPollutionApiClient") WebClient airPollutionApiClient) {
+                                 @Qualifier("openWeatherAirPollutionApiClient") WebClient airPollutionApiClient)
+    {
         this.geocodingApiClient = geocodingApiClient;
         this.airPollutionApiClient = airPollutionApiClient;
     }
 
-    public Optional<ResponseEntity<List<CityQueryResponse>>> getCoordinatesByCityName(String cityName) {
+    public Optional<ResponseEntity<List<CityQueryResponse>>> getCoordinatesByCityName(String cityName)
+    {
         return geocodingApiClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .queryParam("q", cityName)

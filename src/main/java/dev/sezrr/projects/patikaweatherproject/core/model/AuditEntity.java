@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AuditEntity implements Serializable {
+public abstract class AuditEntity implements Serializable
+{
     @Column(name = "is_active")
     private boolean isActive;
 

@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @ControllerAdvice
-public class WebClientResponseExceptionHandler {
+public class WebClientResponseExceptionHandler
+{
     @ExceptionHandler(WebClientResponseException.class)
-    public ErrorResponseEntity<Error> handleWebClientResponseException(WebClientResponseException ex) {
+    public ErrorResponseEntity<Error> handleWebClientResponseException(WebClientResponseException ex)
+    {
         return ErrorResponseEntity.error(
                 new Error(
                         new ErrorDeclaration("Something went wrong while communicating with an external service. " + ex.getMessage()),

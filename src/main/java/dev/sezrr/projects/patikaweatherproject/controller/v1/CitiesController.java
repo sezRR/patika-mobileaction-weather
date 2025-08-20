@@ -23,7 +23,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/v1/cities")
 @Tag(name = "Cities Controller", description = "City Command and Query endpoints")
-public class CitiesController {
+public class CitiesController
+{
     private final CityService cityService;
 
     @GetMapping("")

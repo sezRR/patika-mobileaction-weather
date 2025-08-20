@@ -7,7 +7,8 @@ import java.util.List;
 @Component("HOURS_24")
 public class Averaging24HoursPeriodCalculator
         extends AveragingPeriodArithmeticCalculator
-        implements AQIAveragingPeriodCalculator {
+        implements AQIAveragingPeriodCalculator
+{
     @Override
     public Double calculateAveragingPeriod(List<Double> values)
     {

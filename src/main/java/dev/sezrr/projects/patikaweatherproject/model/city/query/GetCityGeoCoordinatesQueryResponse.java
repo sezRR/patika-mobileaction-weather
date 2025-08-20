@@ -11,4 +11,5 @@ public record GetCityGeoCoordinatesQueryResponse(
         @JsonUnwrapped GeospatialCoordinates geospatialCoordinates
 )
 {
+
 }

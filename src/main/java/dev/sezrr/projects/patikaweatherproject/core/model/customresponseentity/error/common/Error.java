@@ -8,26 +8,31 @@ import java.util.List;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Error {
+public class Error
+{
     private final List<ErrorDeclaration> errorDeclarations;
     private final ErrorStatus errorStatus;
     private final String systemMessage;
 
-    public Error(List<ErrorDeclaration> errorDeclarations, ErrorStatus errorStatus, String systemMessage) {
+    public Error(List<ErrorDeclaration> errorDeclarations, ErrorStatus errorStatus, String systemMessage)
+    {
         this.errorDeclarations = errorDeclarations;
         this.errorStatus = errorStatus;
         this.systemMessage = systemMessage;
     }
 
-    public Error(List<ErrorDeclaration> errorDeclarations, ErrorStatus errorStatus) {
+    public Error(List<ErrorDeclaration> errorDeclarations, ErrorStatus errorStatus)
+    {
         this(errorDeclarations, errorStatus, null);
     }
 
-    public Error(ErrorDeclaration errorDeclaration, ErrorStatus errorStatus, String systemMessage) {
+    public Error(ErrorDeclaration errorDeclaration, ErrorStatus errorStatus, String systemMessage)
+    {
         this(Collections.singletonList(errorDeclaration), errorStatus, systemMessage);
     }
 
-    public Error(ErrorDeclaration errorDeclaration, ErrorStatus errorStatus) {
+    public Error(ErrorDeclaration errorDeclaration, ErrorStatus errorStatus)
+    {
         this(Collections.singletonList(errorDeclaration), errorStatus, null);
     }
 }

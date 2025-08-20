@@ -7,7 +7,8 @@ import dev.sezrr.projects.patikaweatherproject.infrastructure.aqi.model.AirQuali
 import java.util.List;
 import java.util.Map;
 
-public interface AQIAveragingService {
+public interface AQIAveragingService
+{
     AQICategory calculateAveragingPeriodAndCategorizeComponent(BaseAQIComponentCategorizerStrategy baseAqiComponentCategorizerStrategy, List<Double> values);
     Map<AirQualityComponent, String> calculateAveragingPeriodsAndCategorizeComponents(Map<AirQualityComponent, List<Double>> aqiComponentsWithValues);
 }

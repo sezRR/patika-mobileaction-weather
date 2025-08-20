@@ -15,7 +15,8 @@ import java.util.Objects;
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor
-public class DateFilterObject {
+public class DateFilterObject
+{
     @PastOrPresent
     @NotNull(message = "{validation.datefilterobject.start.notnull}")
     private LocalDate start;
@@ -25,14 +26,16 @@ public class DateFilterObject {
     private LocalDate end;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (o == null || getClass() != o.getClass()) return false;
         DateFilterObject that = (DateFilterObject) o;
         return Objects.equals(start, that.start) && Objects.equals(end, that.end);
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(start, end);
     }
 
@@ -55,7 +58,8 @@ public class DateFilterObject {
         return !start.isBefore(end.minusYears(1));
     }
 
-    public static DateFilterObject normalizeMissingDateFilterObject(DateFilterObject dateFilterObject) {
+    public static DateFilterObject normalizeMissingDateFilterObject(DateFilterObject dateFilterObject)
+    {
         if (dateFilterObject != null)
             return dateFilterObject;
 

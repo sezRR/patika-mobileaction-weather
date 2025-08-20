@@ -13,13 +13,16 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AQIAveragingServiceImpl implements AQIAveragingService {
+public class AQIAveragingServiceImpl implements AQIAveragingService
+{
     private final Map<String, AQIAveragingPeriodCalculator> averagingCalculators;
     private final Map<String, BaseAQIComponentCategorizerStrategy> aqiComponents;
 
-    public AQICategory calculateAveragingPeriodAndCategorizeComponent(BaseAQIComponentCategorizerStrategy baseAqiComponentCategorizerStrategy, List<Double> values) {
+    public AQICategory calculateAveragingPeriodAndCategorizeComponent(BaseAQIComponentCategorizerStrategy baseAqiComponentCategorizerStrategy, List<Double> values)
+    {
         AQIAveragingPeriodCalculator calculator = averagingCalculators.get(baseAqiComponentCategorizerStrategy.getAveragingPeriod().name().toUpperCase());
-        if (calculator == null) {
+        if (calculator == null)
+        {
             throw new IllegalArgumentException("Unsupported averaging period for " + baseAqiComponentCategorizerStrategy.getAveragingPeriod());
         }
 
@@ -28,13 +31,16 @@ public class AQIAveragingServiceImpl implements AQIAveragingService {
     }
 
     @Override
-    public Map<AirQualityComponent, String> calculateAveragingPeriodsAndCategorizeComponents(Map<AirQualityComponent, List<Double>> aqiComponentsWithValues) {
-        if (aqiComponentsWithValues == null || aqiComponentsWithValues.isEmpty()) {
+    public Map<AirQualityComponent, String> calculateAveragingPeriodsAndCategorizeComponents(Map<AirQualityComponent, List<Double>> aqiComponentsWithValues)
+    {
+        if (aqiComponentsWithValues == null || aqiComponentsWithValues.isEmpty())
+        {
             throw new IllegalArgumentException("No AQI components provided for averaging and categorization.");
         }
 
         Map<AirQualityComponent, String> categories = new HashMap<>();
-        for (AirQualityComponent aqiComponent : aqiComponentsWithValues.keySet()) {
+        for (AirQualityComponent aqiComponent : aqiComponentsWithValues.keySet())
+        {
             var classifiedAQIComponent = calculateAveragingPeriodAndCategorizeComponent(
                     aqiComponents.get(BaseAQIComponentCategorizerStrategy.getClassifierStrategyName(aqiComponent)), // getClassifierStrategyName is a utility method to get the correct strategy name (ELEMENT_CLASSIFIER)
                     aqiComponentsWithValues.get(aqiComponent)

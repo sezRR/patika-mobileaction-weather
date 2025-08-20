@@ -15,7 +15,8 @@ public enum AQICategory
 
     private final String category;
 
-    AQICategory(String category) {
+    AQICategory(String category)
+    {
         this.category = category;
     }
 }

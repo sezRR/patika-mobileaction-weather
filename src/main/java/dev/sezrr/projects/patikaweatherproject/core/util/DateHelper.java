@@ -8,14 +8,17 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class DateHelper {
-    public static List<LocalDate> findMissingDatesInRange(DateFilterObject dateFilterObject, List<LocalDate> existingDates) {
+    public static List<LocalDate> findMissingDatesInRange(DateFilterObject dateFilterObject, List<LocalDate> existingDates)
+    {
         Set<LocalDate> existing = existingDates == null ?
                 Collections.emptySet()
                 : new HashSet<>(existingDates);
 
         List<LocalDate> missing = new ArrayList<>();
-        for (LocalDate d = dateFilterObject.getStart(); !d.isAfter(dateFilterObject.getEnd()); d = d.plusDays(1)) {
-            if (!existing.contains(d)) {
+        for (LocalDate d = dateFilterObject.getStart(); !d.isAfter(dateFilterObject.getEnd()); d = d.plusDays(1))
+        {
+            if (!existing.contains(d))
+            {
                 missing.add(d);
             }
         }
@@ -25,11 +28,13 @@ public class DateHelper {
 
     public static List<DateFilterObject> generateIntervals(List<LocalDate> dates)
     {
-        if (dates == null || dates.isEmpty()) {
+        if (dates == null || dates.isEmpty())
+        {
             return Collections.emptyList();
         }
 
-        if (dates.size() == 1) {
+        if (dates.size() == 1)
+        {
             LocalDate singleDate = dates.get(0);
             return List.of(new DateFilterObject(singleDate, singleDate));
         }
@@ -52,10 +57,12 @@ public class DateHelper {
             LocalDate rightDate = sorted.get(right);
 
             // If dates are consecutive, extend the current interval
-            if (leftDate.plusDays(1).equals(rightDate)) {
+            if (leftDate.plusDays(1).equals(rightDate))
+            {
                 right++;
                 left++;
-            } else {
+            } else
+            {
                 // Otherwise, close the current interval and start a new one
                 intervals.add(new DateFilterObject(sorted.get(start), sorted.get(left)));
                 start = right;
@@ -85,7 +92,8 @@ public class DateHelper {
         {
             dateFilterObject.setEnd(dateFilterObject.getEnd().minusDays(pageable.getOffset()));
 
-            if (dateFilterObject.getStart().isAfter(dateFilterObject.getEnd())) {
+            if (dateFilterObject.getStart().isAfter(dateFilterObject.getEnd()))
+            {
                 return null;
             }
         }

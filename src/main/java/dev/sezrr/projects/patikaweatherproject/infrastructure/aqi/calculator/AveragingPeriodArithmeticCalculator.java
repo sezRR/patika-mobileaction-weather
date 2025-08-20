@@ -5,8 +5,10 @@ import java.util.List;
 public abstract class AveragingPeriodArithmeticCalculator implements AQIAveragingPeriodCalculator
 {
     @Override
-    public Double calculateAveragingPeriod(List<Double> values) {
-        if (values == null || values.isEmpty()) {
+    public Double calculateAveragingPeriod(List<Double> values)
+    {
+        if (values == null || values.isEmpty())
+        {
             throw new IllegalArgumentException("AveragingPeriodCalculatorDecorator requires at least one value");
         }
 

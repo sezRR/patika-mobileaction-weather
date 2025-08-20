@@ -4,6 +4,8 @@ import dev.sezrr.projects.patikaweatherproject.core.exception.custom.CustomValid
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Supplier;
+
 @Component
 public class CustomValidatorHelper {
     private final CustomValidator beanValidation;
@@ -27,5 +29,16 @@ public class CustomValidatorHelper {
 
         if (bindingResult.hasErrors())
             throw new CustomValidationException(bindingResult, message);
+    }
+
+    public <T, E extends CustomValidationException> void validateOrThrow(T object, Supplier<E> exceptionSupplier, String message){
+        var bindingResult = beanValidation.validate(object);
+
+        if (bindingResult.hasErrors()) {
+            var willThrow = exceptionSupplier.get();
+            willThrow.setBindingResult(bindingResult);
+            willThrow.setMessage(message);
+            throw willThrow;
+        }
     }
 }

@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 @Getter
-public class ResponseEntity<T> extends org.springframework.http.ResponseEntity<CustomResponseEntity<T>> {
-    public ResponseEntity(T body, HttpStatusCode status, boolean success) {
+public class ResponseEntity<T> extends org.springframework.http.ResponseEntity<CustomResponseEntity<T>>
+{
+    public ResponseEntity(T body, HttpStatusCode status, boolean success)
+    {
         super(new CustomResponseEntity<>(success, body), status);
     }
 

@@ -8,7 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "openweather")
-public class OpenWeatherProperties {
+public class OpenWeatherProperties
+{
     @Value("${openweather.base-url}")
     private String baseUrl;
 

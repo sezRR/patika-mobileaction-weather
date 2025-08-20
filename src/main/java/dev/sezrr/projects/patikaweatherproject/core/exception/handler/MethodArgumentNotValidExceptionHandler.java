@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class MethodArgumentNotValidExceptionHandler extends ResponseEntityExceptionHandler {
+public class MethodArgumentNotValidExceptionHandler extends ResponseEntityExceptionHandler
+{
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ValidationError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    protected ResponseEntity<ValidationError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
+    {
         return CustomValidationException.handleValidationException(new CustomValidationException(ex.getBindingResult(), "Validation failed due to incorrect input values."));
     }
 }

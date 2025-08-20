@@ -7,9 +7,11 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-public class MessageSourceConfig {
+public class MessageSourceConfig
+{
     @Bean
-    public MessageSource messageSource() {
+    public MessageSource messageSource()
+    {
         ResourceBundleMessageSource messageSource
                 = new ResourceBundleMessageSource();
 
@@ -20,7 +22,8 @@ public class MessageSourceConfig {
     }
 
     @Bean
-    public LocalValidatorFactoryBean getValidator() {
+    public LocalValidatorFactoryBean getValidator()
+    {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
         return bean;
