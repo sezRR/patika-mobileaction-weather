@@ -7,6 +7,7 @@ import dev.sezrr.projects.patikaweatherproject.model.pollution.query.PollutionQu
 import dev.sezrr.projects.patikaweatherproject.service.pollution.PollutionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -61,7 +62,7 @@ public class PollutionsController
             description = "Creates a new pollution record for a specific city with the provided data."
     )
     public ResponseEntity<PollutionQueryResponse> createNewPollution(
-            @RequestBody CreateNewPollutionCommand createNewPollutionCommand
+            @RequestBody @Valid CreateNewPollutionCommand createNewPollutionCommand
     )
     {
         return ResponseEntity.success(pollutionService.createNewPollution(createNewPollutionCommand));

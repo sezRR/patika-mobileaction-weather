@@ -9,10 +9,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DateHelperTests {
+class DateHelperTests
+{
     @Test
     @DisplayName("findMissingDatesInRange: finds dates not included in input within range")
-    void findMissingDatesInRange_basic() {
+    void findMissingDatesInRange_basic()
+    {
         var start = LocalDate.of(2025, 8, 10);
         var end   = LocalDate.of(2025, 8, 15);
         var range = new DateFilterObject(start, end);
@@ -33,7 +35,8 @@ class DateHelperTests {
 
     @Test
     @DisplayName("generateIntervals: single date becomes a single [d..d] interval")
-    void generateIntervals_singleDate() {
+    void generateIntervals_singleDate()
+    {
         var d = LocalDate.of(2025, 8, 17);
         var result = DateHelper.generateIntervals(List.of(d));
         var expected = List.of(new DateFilterObject(d, d));
@@ -42,7 +45,8 @@ class DateHelperTests {
 
     @Test
     @DisplayName("generateIntervals: builds four runs from spaced dates (now-1w..now-1w), (now..now), (now+2w..now+2w) and (now+3w..now+3w)")
-    void generateIntervals_fourRuns() {
+    void generateIntervals_fourRuns()
+    {
         var minus1w = LocalDate.now().minusWeeks(1);
         var now = LocalDate.now();
         var plus2w = LocalDate.now().plusWeeks(2);
@@ -62,7 +66,8 @@ class DateHelperTests {
 
     @Test
     @DisplayName("generateIntervals: handles unsorted input and duplicates")
-    void generateIntervals_unsortedDuplicates() {
+    void generateIntervals_unsortedDuplicates()
+    {
         var a = LocalDate.of(2025, 8, 10);
         var b = LocalDate.of(2025, 8, 11);
         var c = LocalDate.of(2025, 8, 12);
@@ -80,7 +85,8 @@ class DateHelperTests {
 
     @Test
     @DisplayName("generateIntervals: empty input returns empty list")
-    void generateIntervals_empty() {
+    void generateIntervals_empty()
+    {
         assertTrue(DateHelper.generateIntervals(List.of()).isEmpty());
     }
 }

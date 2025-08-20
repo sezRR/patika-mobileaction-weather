@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15:///testdb
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+
+openweather:
+  api-key: ${OPENWEATHER_API_KEY}
+  base-url: https://api.openweathermap.org
+
+logging:
+  level:
+    dev.sezrr.projects.patikaweatherproject: DEBUG
+    org.springframework.web: DEBUG
+    org.testcontainers: INFO
