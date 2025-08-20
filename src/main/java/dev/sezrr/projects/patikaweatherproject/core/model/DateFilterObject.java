@@ -17,11 +17,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class DateFilterObject {
     @PastOrPresent
-    @NotNull(message = "Start date cannot be empty.")
+    @NotNull(message = "{validation.datefilterobject.start.notnull}")
     private LocalDate start;
 
     @PastOrPresent
-    @NotNull(message = "End date cannot be empty.")
+    @NotNull(message = "{validation.datefilterobject.end.notnull}")
     private LocalDate end;
 
     @Override
@@ -36,28 +36,20 @@ public class DateFilterObject {
         return Objects.hash(start, end);
     }
 
-//    @AssertTrue(message = "Invalid date range.")
-//    public boolean isValid()
-//    {
-//        return isValidRange()
-//                && datesShouldNotBeforeFromGivenDate()
-//                && dateRangesShouldNotMoreThanOneYear();
-//    }
-
-    @AssertTrue(message = "Start date must be before or equal to end date.")
+    @AssertTrue(message = "{validation.datefilterobject.hasvalidrange}")
     public boolean hasValidRange()
     {
         return start != null && end != null && !start.isAfter(end);
     }
 
-    @AssertTrue(message = "Start and end date must not be before from the 2020/11/27.")
+    @AssertTrue(message = "{validation.datefilterobject.afterbusinessruledate}")
     public boolean isAfterBusinessRuleDate()
     {
         var businessRuleDate = LocalDate.of(2020, 11, 27);
         return start.isAfter(businessRuleDate) && end.isAfter(businessRuleDate);
     }
 
-    @AssertTrue(message = "Date ranges should not be more than one year apart.")
+    @AssertTrue(message = "{validation.datefilterobject.iswithinoneyearrange}")
     public boolean isWithinOneYearRange()
     {
         return !start.isBefore(end.minusYears(1));
