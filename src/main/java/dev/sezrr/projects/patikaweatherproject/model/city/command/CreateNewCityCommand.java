@@ -7,7 +7,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateNewCityCommand(
-        @NotNull(message = "City name cannot be empty.")
+        @NotNull(message = "{validation.city.name.notnull}")
         AllowedCityName name,
 
         GeospatialCoordinates geospatialCoordinates,

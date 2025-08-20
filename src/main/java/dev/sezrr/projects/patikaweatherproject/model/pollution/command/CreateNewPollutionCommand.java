@@ -11,11 +11,10 @@ import java.util.Map;
 
 @Builder
 public record CreateNewPollutionCommand(
-        @NotBlank(message = "City id cannot be empty.")
-        @NotNull(message = "City name cannot be empty.")
+        @NotNull(message = "{validation.city.name.notnull}")
         String cityName,
 
-        @NotEmpty(message = "Air Quality components cannot be empty")
+        @NotEmpty(message = "{validation.airQualityComponents.notempty}")
         Map<String, String> airQualityComponents,
 
         LocalDate date

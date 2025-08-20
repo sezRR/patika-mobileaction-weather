@@ -17,11 +17,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class DateFilterObject
 {
-    @PastOrPresent
+    @PastOrPresent(message = "{validation.datefilterobject.start.pastorpresent}")
     @NotNull(message = "{validation.datefilterobject.start.notnull}")
     private LocalDate start;
 
-    @PastOrPresent
+    @PastOrPresent(message = "{validation.datefilterobject.end.pastorpresent}")
     @NotNull(message = "{validation.datefilterobject.end.notnull}")
     private LocalDate end;
 
