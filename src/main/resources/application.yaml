@@ -15,3 +15,7 @@ openweather:
   geo-path: /geo/1.0/direct?appid={appid}
   air-pollution-history-path: /data/2.5/air_pollution/history?appid={appid}
   api-key: ${OPENWEATHER_API_KEY}
+
+localization:
+  cookie:
+    name: PATIKA_MA_WEATHER_LOCALE

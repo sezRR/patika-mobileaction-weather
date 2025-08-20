@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/// /api/v1/cities/{city_id}/pollutions - GET, in the same controller or separate?
-/// /api/v1/cities/{city_id}/pollutions - POST
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/cities")

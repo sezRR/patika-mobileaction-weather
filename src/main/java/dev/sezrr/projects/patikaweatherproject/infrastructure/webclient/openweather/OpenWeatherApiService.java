@@ -43,7 +43,7 @@ public class OpenWeatherApiService
 
     public Optional<OWAPollutionHistory.QueryResponse> getPollutionHistoryByCityName(GetCityPollutionQueryRequest getCityPollutionQueryRequest)
     {
-        // TODO: We can add retry mechanism here
+        // TODO: We can add retry mechanism here, maybe?
         var startMillis = getCityPollutionQueryRequest.dateFilterObject().getStart().atStartOfDay().toEpochSecond(ZoneOffset.UTC);
         var endMillis = getCityPollutionQueryRequest.dateFilterObject().getEnd().atTime(LocalTime.MAX).toEpochSecond(ZoneOffset.UTC);
         return airPollutionApiClient.get()
