@@ -4,6 +4,8 @@ import dev.sezrr.projects.patikaweatherproject.core.config.OpenWeatherProperties
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
@@ -18,7 +20,12 @@ public class OpenWeatherApiClient
     {
         return Map.of("appid", openWeatherProperties.getApiKey());
     }
-    
+
+    // https://stackoverflow.com/questions/59735951/databufferlimitexception-exceeded-limit-on-max-bytes-to-buffer-webflux-error
+    private final ExchangeStrategies strategies = ExchangeStrategies.builder()
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize((int) DataSize.ofMegabytes(10).toBytes()))
+            .build();
+
     @Bean
     public WebClient openWeatherGeocodingApiClient()
     {
@@ -32,6 +39,7 @@ public class OpenWeatherApiClient
     public WebClient openWeatherAirPollutionApiClient()
     {
         return WebClient.builder()
+                .exchangeStrategies(strategies)
                 .baseUrl(openWeatherProperties.getBaseUrl() + openWeatherProperties.getAirPollutionPath())
                 .defaultUriVariables(constructApiKeyUriVariable())
                 .build();

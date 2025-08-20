@@ -18,7 +18,7 @@ public class WebClientResponseExceptionHandler
         return ErrorResponseEntity.error(
                 new Error(
                         new ErrorDeclaration("Something went wrong while communicating with an external service. " + ex.getMessage()),
-                        new ErrorStatus("WebClient Error", HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.name())
+                        new ErrorStatus("WEBCLIENT_ERROR", HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.name())
                 ),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );
