@@ -65,6 +65,11 @@ public class PollutionServiceImpl implements PollutionService
                 DateRangeInvalidException::new,
                 "Invalid date range provided.");
 
+        // Adjust date range within the pagination limits
+        var adjustedDateRange = DateHelper.adjustRangeWithinPagination(dateFilterObject, pageable);
+        if (adjustedDateRange == null)
+            return List.of();
+
         // Fetch pollution data
         var pollutions = new ArrayList<>(pollutionRepository.findAllByCityIdAndInRange(
                         cityGeoCoordinates.id(),
@@ -74,11 +79,6 @@ public class PollutionServiceImpl implements PollutionService
                 ).stream()
                 .map(Pollution.Mapper::toQueryResponse)
                 .toList());
-
-        // Adjust date range within the pagination limits
-        var adjustedDateRange = DateHelper.adjustRangeWithinPagination(dateFilterObject, pageable);
-        if (adjustedDateRange == null)
-            return List.of();
 
         // Check if we have enough data for the requested range
         var expectedDays = Math.min(ChronoUnit.DAYS.between(dateFilterObject.getStart(), dateFilterObject.getEnd()) + 1, pageable.getPageSize());
